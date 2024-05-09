@@ -1,0 +1,44 @@
+{% extends 'ai_blog_app/templates/base.html' %}
+{% block content %}
+
+<!-- Main -->
+<div class="flex-grow container mt-5 w-75">
+    <div class="p-4 text-dark bg-white rounded-3 shadow">
+        <!-- Introduction -->
+        <div class="text-center">
+            <h2 class="mb-4 font-semibold">Welcome to AI Blog Generator!</h2>
+            <p class="text-gray-700">Generate high-quality blog articles from YouTube videos
+                                    using artificial intelligence.
+                                    Simply enter the link to the YouTube video below and let
+                                    the Al create the content for you!
+            </p>
+        </div>
+        <!-- Youtube link -->
+        <div class="text-center mb-2 px-3">
+            <h3 class="mb-4 font-semibold">Enter Youtube Video Link</h3>
+            <form id="generate_article_form" class="row g-3">
+                <input type="url" class="form-control" style="width: 80%; float: left;"
+                       id="youtube_link" placeholder="Paste Youtube Link Here...">
+                  <button type="submit" class="btn btn-primary" style="width: 20%; float: left;">Generate</button>
+
+            </form>
+        </div>
+
+        <!-- Generated Blog Display Section -->
+        <section id="generated_blog_section" class="mt-10 text-center flex-grow" style="display: none;">
+            <h3 class="mb-4 font-semibold"> Generated Blog Article</h3>
+            <div id="blog_content" class="mt-2 text-gray-700 space-y-4">
+                <!--section for loading circle-->
+               <div class="d-flex justify-content-center">
+                  <div class="spinner-border text-primary" role="status"
+                       style="width: 5rem; height: 5rem; border-width: 0.5em;
+                              display: none;">
+                    <span class="sr-only"></span>
+                  </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
+{% endblock %}
