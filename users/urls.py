@@ -5,6 +5,7 @@ from . import views
 app_name = 'reviews'
 
 urlpatterns = [
-    path('login/', views.login_user, name='users:login'),
-    path('sign_up/', views.sign_up, name='users:sign_up'),
+    path('login/', views.LoginUser.as_view(), name='login'),
+    path('logout/', views.logout_user, name='logout'),
+    path('sign_up/', views.SignUpUser.as_view(), name='sign_up'),
 ]

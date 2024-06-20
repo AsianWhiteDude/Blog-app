@@ -1,26 +1,31 @@
-from django.contrib.auth import login, authenticate
-from django.http import HttpResponseRedirect
+from django.contrib.auth import login, authenticate, logout
+
+from django.contrib.auth.views import LoginView
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
-from django.urls import reverse
-from .forms import LoginUserForm
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView
 
-def login_user(request):
-
-    if request.method == 'POST':
-        form = LoginUserForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = authenticate(request, username=cd['email'], password=cd['password'])
-
-            if user and user.is_active:
-                login(request, user)
-                return HttpResponseRedirect(reverse('home'))
-
-    form = LoginUserForm()
-    return render(request, 'users/login.html', context={'title': 'AI Blog Generator',
-                                                                            'form': form})
+from .forms import LoginUserForm, SignUpUserLogin
 
 
-def sign_up(request):
-    return render(request, 'users/sign_up.html', context={'title': 'AI Blog Generator'})
+class LoginUser(LoginView):
+    form_class = LoginUserForm
+    template_name = 'users/login.html'
+    extra_context = {'title': 'AI Blog Generator'}
 
+    def get_success_url(self):
+        return reverse_lazy('home')
+
+
+class SignUpUser(CreateView):
+    form_class = SignUpUserLogin
+    template_name = 'users/sign_up.html'
+    extra_context = {'title': 'AI Blog Generator'}
+
+    def get_success_url(self):
+        return reverse_lazy('users:login')
+
+def logout_user(request):
+    logout(request)
+    return HttpResponseRedirect(reverse_lazy('home'))

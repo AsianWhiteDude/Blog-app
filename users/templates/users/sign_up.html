@@ -5,30 +5,17 @@
 <div class="flex-grow container mt-5 mb-5 w-75">
     <div class="p-4 text-dark bg-white rounded-3 shadow">
         <h2>Sign Up</h2>
-        <form>
-          <!-- Username -->
-          <div data-mdb-input-init class="form-outline mb-4">
-            <input type="email" id="Username" class="form-control" />
-            <label class="form-label" for="Username">Username</label>
-          </div>
+        <form method="post">
+          {% csrf_token %}
 
-          <!-- Email input -->
-          <div data-mdb-input-init class="form-outline mb-4">
-            <input type="email" id="Email" class="form-control" />
-            <label class="form-label" for="Email">Email address</label>
-          </div>
-
-          <!-- Password input -->
-          <div data-mdb-input-init class="form-outline mb-4">
-            <input type="password" id="form2Example2" class="form-control" />
-            <label class="form-label" for="form2Example2">Password</label>
-          </div>
-
-          <div data-mdb-input-init class="form-outline mb-4">
-            <input type="password" id="form2Example3" class="form-control" />
-            <label class="form-label" for="form2Example2">Confirm Password</label>
-          </div>
-
+          <input type="hidden" name="next" value="{{ next }}" />
+          <div class="form-error">{{ form.non_field_errors }}</div>
+          {% for field in form %}
+            <div class="form-outline mb-4">
+              <p><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</p>
+              <div class="form-error">{{ field.errors }}</div>
+            </div>
+          {% endfor %}
 
           <!-- Submit button -->
           <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Sign up</button>
@@ -37,6 +24,7 @@
           <div class="text-center">
             <p>Already have an account? <a href="#">Login in</a></p>
           </div>
-
+        </form>
+  </div>
 </div>
 {% endblock %}

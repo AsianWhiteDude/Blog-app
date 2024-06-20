@@ -6,20 +6,16 @@
     <div class="p-4 text-dark bg-white rounded-3 shadow">
         <h2>Login</h2>
         <form method="post">
-            {% csrf_token %}
+          {% csrf_token %}
 
-          <!-- Email input -->
-          <div data-mdb-input-init class="form-outline mb-4">
-            {{ form.email }}
-            <label class="form-label" for="EmailForm">Email address</label>
-          </div>
-
-          <!-- Password input -->
-          <div data-mdb-input-init class="form-outline mb-4">
-            {{ form.password }}
-            <label class="form-label" for="PasswordField">Password</label>
-          </div>
-
+          <input type="hidden" name="next" value="{{ next }}" />
+          <div class="form-error">{{ form.non_field_errors }}</div>
+          {% for field in form %}
+            <div class="form-outline mb-4">
+              <p><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</p>
+              <div class="form-error">{{ field.errors }}</div>
+            </div>
+          {% endfor %}
           <!-- 2 column grid layout for inline styling -->
           <div class="row mb-4">
             <div class="col d-flex">
