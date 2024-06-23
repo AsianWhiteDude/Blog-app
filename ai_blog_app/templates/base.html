@@ -19,7 +19,7 @@
     <div class="container">
       <div class="row">
         <div class="col-9">
-          <h1 class="text-white">AI Blog Generator</h1>
+          <a class="text-decoration-none" href="{% url 'home' %}"><h1 class="text-white">AI Blog Generator</h1></a>
         </div>
         <div class="col-3 d-flex flex-row-reverse">
             {% if user.is_authenticated %}

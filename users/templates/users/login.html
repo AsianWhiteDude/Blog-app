@@ -16,28 +16,16 @@
               <div class="form-error">{{ field.errors }}</div>
             </div>
           {% endfor %}
-          <!-- 2 column grid layout for inline styling -->
-          <div class="row mb-4">
-            <div class="col d-flex">
-              <!-- Checkbox -->
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
-                <label class="form-check-label" for="form2Example31"> Remember me </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Submit button -->
-          <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Sign in</button>
-
-          <!-- Register buttons -->
+            <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Sign in</button>
           <div class="text-center">
-            <p>Not a member? <a href="#">Register</a></p>
+            <p>Not a member? <a href="{% url 'users:sign_up' %}">Register</a></p>
           </div>
           <div class="text-center">
               <!-- Simple link -->
-              <a href="#!">Forgot password?</a>
+              <a href="{% url 'users:password_reset' %}">Forgot password?</a>
             </div>
+    </div>
+
         </form>
     </div>
 </div>
