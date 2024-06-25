@@ -50,3 +50,17 @@ class SignUpUserLogin(UserCreationForm):
         if get_user_model().objects.filter(email=cd['email']).exists():
             raise forms.ValidationError('E-mail уже зарегистрирован в системе!')
         return cd['email']
+
+
+class ProfileUserForm(forms.ModelForm):
+    username = forms.CharField(disabled=True, label='Username',
+                               widget=forms.TextInput(attrs={'class': 'form-control',
+                                                             'id': 'UsernameForm',
+                                                             'placeholder': 'Enter your username'}))
+    email = forms.EmailField(disabled=True, label='E-mail',
+                             widget=forms.EmailInput(attrs={'class': 'form-control',
+                                                            'id': 'EmailForm',
+                                                            'placeholder': 'Enter your email'}))
+    class Meta:
+        model = get_user_model()
+        fields = ['username', 'email']

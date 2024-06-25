@@ -1,5 +1,5 @@
 from django.db import models
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 
 class Posts(models.Model):
@@ -15,4 +15,4 @@ class Posts(models.Model):
         ordering = ['-time_create']
 
     def get_absolute_url(self):
-        return reverse('post', kwargs={'post_slug': self.slug})
+        return reverse_lazy('post', kwargs={'post_slug': self.slug})
