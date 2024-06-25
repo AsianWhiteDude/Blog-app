@@ -8,7 +8,7 @@ class LoginUserForm(AuthenticationForm):
                                widget=forms.TextInput(attrs={'class': 'form-control',
                                                              'id': 'UsernameForm',
                                                              'placeholder': 'Enter your username'}))
-    password = forms.CharField(label='Password', required=True,
+    password = forms.CharField(label='Пароль', required=True,
                                widget=forms.PasswordInput(attrs={'class': 'form-control',
                                                                  'id': 'PasswordField',
                                                                  'placeholder': 'Enter your password'}))
@@ -27,11 +27,11 @@ class SignUpUserLogin(UserCreationForm):
                              widget=forms.EmailInput(attrs={'class': 'form-control',
                                                             'id': 'EmailForm',
                                                             'placeholder': 'Enter your email'}))
-    password1 = forms.CharField(label='Password', required=True,
+    password1 = forms.CharField(label='Пароль', required=True,
                                 widget=forms.PasswordInput(attrs={'class': 'form-control',
                                                                   'id': 'PasswordField',
                                                                   'placeholder': 'Enter your password'}))
-    password2 = forms.CharField(label='Confirm Password', required=True,
+    password2 = forms.CharField(label='Подтвердите пароль', required=True,
                                 widget=forms.PasswordInput(attrs={'class': 'form-control',
                                                                   'id': 'ConfirmPasswordField',
                                                                   'placeholder': 'Confirm your password'}))
@@ -48,5 +48,5 @@ class SignUpUserLogin(UserCreationForm):
     def clean_email(self):
         cd = self.cleaned_data
         if get_user_model().objects.filter(email=cd['email']).exists():
-            raise forms.ValidationError('E-mail is already registered in the system!')
+            raise forms.ValidationError('E-mail уже зарегистрирован в системе!')
         return cd['email']

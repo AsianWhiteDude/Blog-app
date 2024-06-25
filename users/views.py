@@ -12,7 +12,7 @@ from .forms import LoginUserForm, SignUpUserLogin
 class LoginUser(LoginView):
     form_class = LoginUserForm
     template_name = 'users/login.html'
-    extra_context = {'title': 'AI Blog Generator'}
+    extra_context = {'title': 'Blog Generator'}
 
     def get_success_url(self):
         return reverse_lazy('home')
@@ -21,7 +21,7 @@ class LoginUser(LoginView):
 class SignUpUser(CreateView):
     form_class = SignUpUserLogin
     template_name = 'users/sign_up.html'
-    extra_context = {'title': 'AI Blog Generator'}
+    extra_context = {'title': 'Blog Generator'}
 
     def get_success_url(self):
         return reverse_lazy('users:login')

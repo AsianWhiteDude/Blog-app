@@ -2,9 +2,9 @@
 {% block content %}
 
 <!-- Main -->
-<div class="flex-grow container mt-5 w-75">
+<div class="flex-grow container mt-5 w-50">
     <div class="p-4 text-dark bg-white rounded-3 shadow">
-        <h2>Login</h2>
+        <h2>Вход в аккаунт</h2>
         <form method="post">
           {% csrf_token %}
 
@@ -16,13 +16,13 @@
               <div class="form-error">{{ field.errors }}</div>
             </div>
           {% endfor %}
-            <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Sign in</button>
+            <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Вход</button>
           <div class="text-center">
-            <p>Not a member? <a href="{% url 'users:sign_up' %}">Register</a></p>
+            <p>Еще не зарегистрирваны? <a href="{% url 'users:sign_up' %}">Регистрация</a></p>
           </div>
           <div class="text-center">
               <!-- Simple link -->
-              <a href="{% url 'users:password_reset' %}">Forgot password?</a>
+              <a href="{% url 'users:password_reset' %}">Забыли пароль?</a>
             </div>
     </div>
 
