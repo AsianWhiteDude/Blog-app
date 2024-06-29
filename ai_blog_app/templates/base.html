@@ -19,7 +19,7 @@
     <div class="container">
       <div class="row">
         <div class="col-9">
-          <a class="text-decoration-none" href="{% url 'home' %}"><h1 class="text-white">{{ title }}</h1></a>
+            <h1><a class="text-decoration-none text-white" href="{% url 'home' %}">{{ title }}</a></h1>
         </div>
         <div class="col-3 d-flex flex-row-reverse">
             {% if user.is_authenticated %}

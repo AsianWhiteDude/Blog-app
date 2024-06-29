@@ -2,7 +2,7 @@
 {% block content %}
 
 <!-- Main -->
-<div class="flex-grow container my-5 mb-10 w-75" style="transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform = 'scale(1.1)';" onmouseout="this.style.transform = 'scale(1)'; this.style.boxShadow = 'none';">
+<div class="flex-grow container my-5 mb-10 w-75" style="transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform = 'scale(1.05)';" onmouseout="this.style.transform = 'scale(1)'; this.style.boxShadow = 'none';">
     <div class="p-4 text-dark bg-white rounded-3 shadow">
         <!-- Introduction -->
         <div class="text-center">
@@ -16,7 +16,8 @@
         <!-- Youtube link -->
         <div class="text-center mb-2 px-3">
             <h3 class="mb-4 font-semibold">Введите ссылку на ютуб видео</h3>
-            <form id="generate_article_form" class="row g-3">
+            <form id="generate_article_form" class="row g-3" method="POST">
+                {% csrf_token %}
                 <input type="url" class="form-control" style="width: 80%; float: left;"
                        id="youtube_link" placeholder="Paste Youtube Link Here...">
                   <button id="generateBlogButton" type="submit" class="btn btn-primary" style="width: 20%; float: left;">Сгенерировать</button>
@@ -24,7 +25,7 @@
         </div>
 
         <!-- Generated Blog Display Section -->
-        <section id="generated_blog_section" class="mt-10 text-center flex-grow" style="display: block;">
+        <section id="generated_blog_section" class="mt-10 text-center flex-grow" style="display: none;">
             <h3 class="mb-4 font-semibold"> Сгенерированная статья на основе видео</h3>
             <div id="blog_content" class="mt-2 text-gray-700 space-y-4">
                 <!--section for loading circle-->

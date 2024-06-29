@@ -5,21 +5,22 @@ import requests
 import assemblyai as aai
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login
-from django.http import HttpResponseRedirect, JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import render
-from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from openai import OpenAI
 from pytube import YouTube
 from dotenv import load_dotenv
+from .models import Posts
 
 load_dotenv()
 
+
+@login_required
 def index(request):
     return render(request, 'blog_generator/index.html', context={'title': 'Blog Generator'})
 
-@csrf_exempt
+
 def generate_blog(request):
     if request.method == 'POST':
         try:
@@ -36,21 +37,24 @@ def generate_blog(request):
         if not transcription:
             return JsonResponse({'error': 'Failed to get transcript'}, status=500)
 
-        # use OpenAI to generate the blog
+        # use AI to generate the blog
         blog_content = generate_blog_from_transcription(transcription)
         if not blog_content:
             return JsonResponse({'error': 'Failed to generate blog article'}, status=500)
         # save blog article to the database
-
+        new_blog_post = Posts.objects.create(
+            user=request.user,
+            yt_title=title,
+            yt_link=yt_link,
+            content=blog_content,
+        )
+        new_blog_post.save()
         # return blog article as a response
-
 
         return JsonResponse({'content': blog_content})
 
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-
 
 def get_yt_title(link):
     yt = YouTube(link)
@@ -59,6 +63,8 @@ def get_yt_title(link):
 
 
 def download_audio(link):
+
+
     yt = YouTube(link)
     video = yt.streams.filter(only_audio=True).first()
 
@@ -68,13 +74,22 @@ def download_audio(link):
     out_file = video.download(output_path=settings.MEDIA_ROOT, filename=file_name)
     return out_file
 
+
+
+
 def get_transcription(link):
     audio_file = download_audio(link)
     aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
-    transcriber = aai.Transcriber()
+    config = aai.TranscriptionConfig(language_code='ru')
+    transcriber = aai.Transcriber(config=config)
     transcript = transcriber.transcribe(audio_file)
 
+    # delete file after getting the transcript
+    if os.path.exists(audio_file):
+        os.remove(audio_file)
+
     return transcript.text
+
 
 def generate_blog_from_transcription(transcription):
 
@@ -117,5 +132,18 @@ def generate_random_string():
     random_string = str(uuid.uuid4())
     return random_string
 
-def posts(request):
-    return render(request, 'blog_generator/posts.html', context={'title': 'AI Blog Generator'})
+def all_blogs(request):
+    blog_articles = Posts.objects.filter(user=request.user)
+    return render(request, 'blog_generator/all_blogs.html',
+                  context={'title': 'AI Blog Generator',
+                           'blog_articles': blog_articles})
+
+
+def post_details(request, pk):
+    blog_article = Posts.objects.get(id=pk)
+    if request.user == blog_article.user:
+        return render(request, 'blog_generator/blog_details.html',
+                  context={'title': 'AI Blog Generator',
+                           'blog_article': blog_article})
+    else:
+        return HttpResponseForbidden('<h1>403 Forbidden</h1>')
