@@ -8,12 +8,15 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 from pytube import YouTube
 from dotenv import load_dotenv
 from .models import Posts
 
 load_dotenv()
+
+aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
+cat_api_id = os.getenv('YAGPT_CAT_API_KEY')
+yagpt_api_key = os.getenv('YAGPT_API_KEY')
 
 
 @login_required
@@ -21,6 +24,7 @@ def index(request):
     return render(request, 'blog_generator/index.html', context={'title': 'Blog Generator'})
 
 
+# add caching
 def generate_blog(request):
     if request.method == 'POST':
         try:
@@ -79,7 +83,6 @@ def download_audio(link):
 
 def get_transcription(link):
     audio_file = download_audio(link)
-    aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
     config = aai.TranscriptionConfig(language_code='ru')
     transcriber = aai.Transcriber(config=config)
     transcript = transcriber.transcribe(audio_file)
@@ -93,8 +96,7 @@ def get_transcription(link):
 
 def generate_blog_from_transcription(transcription):
 
-    cat_api_id = os.getenv('YAGPT_CAT_API_KEY')
-    yagpt_api_key = os.getenv('YAGPT_API_KEY')
+
     prompt = {
         "modelUri": f"gpt://{cat_api_id}/yandexgpt-lite",
         "completionOptions": {
