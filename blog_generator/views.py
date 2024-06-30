@@ -1,13 +1,16 @@
 import json
 import os.path
 import uuid
+
+
+import boto3
 import requests
 import assemblyai as aai
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from pytube import YouTube
 from dotenv import load_dotenv
 from .models import Posts
@@ -25,6 +28,7 @@ def index(request):
 
 
 # add caching
+@csrf_exempt
 def generate_blog(request):
     if request.method == 'POST':
         try:
@@ -37,7 +41,7 @@ def generate_blog(request):
         title = get_yt_title(yt_link)
 
         # get transcript
-        transcription = get_transcription(yt_link)
+        transcription = get_transcription_from_s3(yt_link)
         if not transcription:
             return JsonResponse({'error': 'Failed to get transcript'}, status=500)
 
@@ -45,6 +49,7 @@ def generate_blog(request):
         blog_content = generate_blog_from_transcription(transcription)
         if not blog_content:
             return JsonResponse({'error': 'Failed to generate blog article'}, status=500)
+
         # save blog article to the database
         new_blog_post = Posts.objects.create(
             user=request.user,
@@ -65,33 +70,41 @@ def get_yt_title(link):
     title = yt.title
     return title
 
+session = boto3.session.Session()
+s3 = session.client(
+    service_name='s3',
+    endpoint_url='https://storage.yandexcloud.net',
+    aws_access_key_id='YCAJEVEixWfkNhpMnlZQlb-dS',
+    aws_secret_access_key='YCPnvWnrQivFI_HDm4nKE1P0DpEbK2UK3AjkP5fb',
+)
 
-def download_audio(link):
 
+def upload_audio_to_s3(audio_url):
+    yt = YouTube(audio_url)
+    stream = yt.streams.filter(only_audio=True).first()
 
-    yt = YouTube(link)
-    video = yt.streams.filter(only_audio=True).first()
+    response = requests.get(stream.url, stream=True)
 
     unique_id = generate_random_string()
     file_name = f"audio_{unique_id}.mp3"
 
-    out_file = video.download(output_path=settings.MEDIA_ROOT, filename=file_name)
-    return out_file
+    s3.put_object(Bucket='blog-app', Key=file_name, Body=response.content)
 
+    presigned_url = s3.generate_presigned_url('get_object', Params={'Bucket': 'blog-app', 'Key': file_name})
 
+    return (presigned_url, file_name)
 
+def get_transcription_from_s3(audio_url):
+    presigned_url, file_name = upload_audio_to_s3(audio_url)
 
-def get_transcription(link):
-    audio_file = download_audio(link)
     config = aai.TranscriptionConfig(language_code='ru')
     transcriber = aai.Transcriber(config=config)
-    transcript = transcriber.transcribe(audio_file)
+    transcript = transcriber.transcribe(presigned_url)
 
-    # delete file after getting the transcript
-    if os.path.exists(audio_file):
-        os.remove(audio_file)
+    s3.delete_object(Bucket='blog-app', Key=file_name)
 
     return transcript.text
+
 
 
 def generate_blog_from_transcription(transcription):
@@ -137,7 +150,7 @@ def generate_random_string():
 def all_blogs(request):
     blog_articles = Posts.objects.filter(user=request.user)
     return render(request, 'blog_generator/all_blogs.html',
-                  context={'title': 'AI Blog Generator',
+                  context={'title': 'Blog Generator',
                            'blog_articles': blog_articles})
 
 
@@ -145,7 +158,7 @@ def post_details(request, pk):
     blog_article = Posts.objects.get(id=pk)
     if request.user == blog_article.user:
         return render(request, 'blog_generator/blog_details.html',
-                  context={'title': 'AI Blog Generator',
+                  context={'title': 'Blog Generator',
                            'blog_article': blog_article})
     else:
         return HttpResponseForbidden('<h1>403 Forbidden</h1>')
