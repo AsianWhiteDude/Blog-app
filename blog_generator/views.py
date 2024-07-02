@@ -15,6 +15,7 @@ from pytube import YouTube
 from dotenv import load_dotenv
 from .models import Posts
 
+
 load_dotenv()
 
 aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
@@ -27,7 +28,6 @@ def index(request):
     return render(request, 'blog_generator/index.html', context={'title': 'Blog Generator'})
 
 
-# add caching
 @csrf_exempt
 def generate_blog(request):
     if request.method == 'POST':
