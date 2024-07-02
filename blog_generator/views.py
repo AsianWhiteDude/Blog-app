@@ -50,12 +50,14 @@ def generate_blog(request):
         if not blog_content:
             return JsonResponse({'error': 'Failed to generate blog article'}, status=500)
 
+        content_url = save_content_to_storage(content=blog_content)
+
         # save blog article to the database
         new_blog_post = Posts.objects.create(
             user=request.user,
             yt_title=title,
             yt_link=yt_link,
-            content=blog_content,
+            content_url=content_url,
         )
         new_blog_post.save()
         # return blog article as a response
@@ -74,8 +76,8 @@ session = boto3.session.Session()
 s3 = session.client(
     service_name='s3',
     endpoint_url='https://storage.yandexcloud.net',
-    aws_access_key_id='YCAJEVEixWfkNhpMnlZQlb-dS',
-    aws_secret_access_key='YCPnvWnrQivFI_HDm4nKE1P0DpEbK2UK3AjkP5fb',
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
 )
 
 
@@ -143,19 +145,42 @@ def generate_blog_from_transcription(transcription):
     result = dict_from_gpt['result']['alternatives'][0]['message']['text']
     return result
 
+
+def save_content_to_storage(content):
+
+    unique_id = generate_random_string()
+    file_name = f"content_{unique_id}.txt"
+
+    s3.put_object(Bucket='blog-app-contents', Key=file_name, Body=content)
+
+    return file_name
+
+
 def generate_random_string():
     random_string = str(uuid.uuid4())
     return random_string
 
+
 def all_blogs(request):
     blog_articles = Posts.objects.filter(user=request.user)
-    return render(request, 'blog_generator/all_blogs.html',
-                  context={'title': 'Blog Generator',
-                           'blog_articles': blog_articles})
 
+    for article in blog_articles:
+
+        get_object_response = s3.get_object(Bucket='blog-app-contents', Key=article.content_url)
+
+        article.content = get_object_response['Body'].read().decode('utf-8')
+
+
+    return render(request, 'blog_generator/all_blogs.html',
+                  context={'title': 'Blog Generator', 'blog_articles': blog_articles})
 
 def post_details(request, pk):
     blog_article = Posts.objects.get(id=pk)
+
+    get_object_response = s3.get_object(Bucket='blog-app-contents', Key=blog_article.content_url)
+
+    blog_article.content = get_object_response['Body'].read().decode('utf-8')
+
     if request.user == blog_article.user:
         return render(request, 'blog_generator/blog_details.html',
                   context={'title': 'Blog Generator',

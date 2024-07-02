@@ -1,13 +1,12 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.urls import reverse, reverse_lazy
 
 
 class Posts(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     yt_title = models.CharField(max_length=255)
     yt_link = models.URLField()
-    content = models.TextField()
+    content_url = models.URLField(max_length=500)
     time_create = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
