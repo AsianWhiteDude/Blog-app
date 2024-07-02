@@ -1,0 +1,19 @@
+{% extends 'ai_blog_app/templates/base.html' %}
+{% block content %}
+
+<!-- Main -->
+<div class="flex-grow container mt-5 w-75" style="transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform = 'scale(1.05)';" onmouseout="this.style.transform = 'scale(1)'; this.style.boxShadow = 'none';">
+    <div class="p-4 text-dark bg-white rounded-3 shadow">
+        <h2>Детали видео</h2>
+        <div class="p-4">
+            <h4 class="text-lg font-semibold">Название на Ютубе</h4>
+            <p class="text-gray-700">{{blog_article.yt_title}}</p>
+            <h4 class="text-lg font-semibold mt-4">Ссылка Ютуб</h4>
+            <a href="{{blog_article.yt_link}}" class="text-blue-600 hover:underline">{{blog_article.yt_link}}</a>
+            <hr class="my-4 border-gray-300">
+            <h3 class="text-lg font-semibold">{{blog_article.yt_title}}</h3>
+            <p class="text-gray-700">{{blog_article.content}}</p>
+            </div>
+    </div>
+</div>
+{% endblock %}

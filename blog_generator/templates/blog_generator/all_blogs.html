@@ -1,0 +1,20 @@
+{% extends 'ai_blog_app/templates/base.html' %}
+{% block content %}
+
+<!-- Main -->
+<div class="flex-grow container mt-5 w-75" style="transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform = 'scale(1.05)';" onmouseout="this.style.transform = 'scale(1)'; this.style.boxShadow = 'none';">
+    <div class="p-4 text-dark bg-white rounded-3 shadow">
+        <h2>История</h2>
+        <div class="space-y-4 my-3">
+            {% for article in blog_articles %}
+            <a class="text-decoration-none" href="blog-details/{{article.id}}/">
+                <div class="border border-gray-400 p-3 m-3 shadow-sm rounded-3" style="transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform = 'scale(1.02)';" onmouseout="this.style.transform = 'scale(1)'; this.style.boxShadow = 'none';">
+                    <h4 class="text-dark text-lg font-semibold">{{ article.yt_title }}</h4>
+                    <p class="text-dark">{{ article.content|truncatechars:120 }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
