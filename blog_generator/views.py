@@ -11,16 +11,16 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from pytube import YouTube
+from pytubefix import YouTube
 from dotenv import load_dotenv
 from .models import Posts
 
 
 load_dotenv()
 
-aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
-cat_api_id = os.getenv('YAGPT_CAT_API_KEY')
-yagpt_api_key = os.getenv('YAGPT_API_KEY')
+aai.settings.api_key = str(os.getenv('ASSEMBLYAI_API_KEY'))
+cat_api_id = str(os.getenv('YAGPT_CAT_API_KEY'))
+yagpt_api_key = str(os.getenv('YAGPT_API_KEY'))
 
 
 @login_required
@@ -76,8 +76,8 @@ session = boto3.session.Session()
 s3 = session.client(
     service_name='s3',
     endpoint_url='https://storage.yandexcloud.net',
-    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    aws_access_key_id=str(os.getenv('AWS_ACCESS_KEY_ID')),
+    aws_secret_access_key=str(os.getenv('AWS_SECRET_ACCESS_KEY')),
 )
 
 
